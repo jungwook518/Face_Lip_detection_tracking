@@ -2,6 +2,11 @@
 transcript*
 *.pt
 my.log
+.mp4
+.avi
+.mp3
+.wav
+.jpeg
 # Prerequisites
 *.d
 
