@@ -68,10 +68,10 @@ for video_name in video_list:
             print("already existed: ", video_name)
             continue
         
-        reader = skvideo.io.FFmpegReader(video)
-        video_shape = reader.getShape()
-        (num_frames, h, w, c) = video_shape
-        print("input_video shape : ",num_frames, h, w, c)
+        # reader = skvideo.io.FFmpegReader(video)
+        # video_shape = reader.getShape()
+        # (num_frames, h, w, c) = video_shape
+        # print("input_video shape : ",num_frames, h, w, c)
 
         start_time=time.time()
         vs = cv2.VideoCapture(video)
@@ -101,7 +101,7 @@ for video_name in video_list:
                         min_index=overlapped_list.index(max(overlapped_list))
                         pred=[pred[min_index]]
                         overlapped_list=[]
-        
+                    
                     pred = np.squeeze(pred)
                     x = pred[:,0]
                     y = pred[:,1]
@@ -146,7 +146,7 @@ for video_name in video_list:
 
         out = cv2.VideoWriter(
                 out_path,
-                cv2.VideoWriter_fourcc(*'DIVX'),
+                cv2.VideoWriter_fourcc(*'mp4v'),
                 fps,
                 size,
             ) 
