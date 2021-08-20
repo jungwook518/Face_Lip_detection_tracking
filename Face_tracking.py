@@ -14,6 +14,7 @@ from os import listdir
 from utils import find_q2k, find_outliers
 import pdb
 import pickle
+import skvideo.io
 
 os.environ["CUDA_VISIBLE_DEVICES"] = str(0)
 # construct the argument parser and parse the arguments
@@ -55,22 +56,24 @@ size=(224,224)
 
 video_list=[x for x in listdir(args["video_path"]) if ".mp4" in x]
 video_list=sorted(video_list)
-#video_list=video_list[::-1]
 video_count=0
-pdb.set_trace()
+
 for video_name in video_list:
 
     try:
-        
-        
-        start_time=time.time()
         video=args["video_path"]+str(video_name)
         out_path = args["save_video_path"] + str(video_name)   
     
         if os.path.exists(out_path):
             print("already existed: ", video_name)
             continue
-    
+        
+        reader = skvideo.io.FFmpegReader(video)
+        video_shape = reader.getShape()
+        (num_frames, h, w, c) = video_shape
+        print("input_video shape : ",num_frames, h, w, c)
+
+        start_time=time.time()
         vs = cv2.VideoCapture(video)
         
         # loop over frames from the video stream
@@ -80,30 +83,18 @@ for video_name in video_list:
         video_count+=1
         overlapped_list=[]
         
-        
-        while True:
-            # grab the current frame, then handle if we are using a
-            # VideoStream or VideoCapture object
-            
+        while True:        
             hasFrame, frame = vs.read()
             if not hasFrame:
                 break
-        #    frame = frame[1] if args.get("video", False) else frame
-            #frame = frame[:,int(240):int(1680)]
-            #frame = cv2.resize(frame, dsize=(640,480),interpolation=cv2.INTER_LINEAR)
-           
-            count+=1
-            #print("count", count)
-            # check to see if we have reached the end of the stream
-            #if frame is None:
-            #    break
-            
+
+            count+=1      
             if args["mode"] == "tracking":
                 ############################ face detect at first frame ############################
                 if n_frame == 0:
                     bbox = []
                     pred, probs = fa.get_landmarks(frame)
-                    
+                    # pdb.set_trace()
                     if len(probs) > 1:
                         for prob in probs:
                             overlapped_list.append(prob)
@@ -122,39 +113,22 @@ for video_name in video_list:
                     width = int((max_x-min_x)/2)
                     standard=max(height,width)
                     box = [int(min_x), int(min_y), int(max_x), int(max_y)]
-                #####################################################################################
-#                    print("first box", box)   
-                # create a new object tracker for the bounding box and add it
-                # to our multi-object tracker
-        #            for idx_b in range(len(bbox)): 
                     box = tuple(box)
                     tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]]()
                     tracker.init(frame, box)
-                    #pdb.set_trace()
+
                 else:
-                    #pdb.set_trace() 
                     (success, boxes) = tracker.update(frame)
-                    #pdb.set_trace()
                     box=[]
-                    #pdb.set_trace()
                     for i in range(len(boxes)):
                         box.append(int(boxes[i]))
                     box=tuple(box)
-#                    print("after box",box)
         
             else:
                 print("NotImplementMode Error")
                 sys.exit()
-        
-            # loop over the bounding boxes and draw then on the frame
-            # If you want to add crop function, you can this for loop #
-            #pdb.set_trace() 
+
             (x, y, w, h) = [int(v) for v in box]
-                # here, i index means person_id. crop i axis and resize
-            #left_boundary=max(int(0),int((h+y)/2)-standard)
-            #right_boundary=min(int(640),int((h+y)/2)+standard)
-            #top_boundary=max(int(0),int((w+x)/2)-standard)
-            #bottom_boundary=min(int(480),int((w+x)/2)+standard)
             
             left_boundary=int((h+y)/2)-standard
             right_boundary=int((h+y)/2)+standard
@@ -167,18 +141,8 @@ for video_name in video_list:
             files.append(resized_crop_img) 
             n_frame += 1
         
-        #########save cropped video##########
-        #frame_array=[]
-        #for j in range(len(files)):
-            #height, width, layers = files[j].shape
-            #size = (width,height)
-            #frame_array.append(files[j])
-        
-        
-        #out_path = args["save_video_path"] + video_name
            
         print("mpg vs mpg_crop: {} vs {}".format(count,len(files)))
-        #pdb.set_trace()
 
         out = cv2.VideoWriter(
                 out_path,
@@ -187,7 +151,7 @@ for video_name in video_list:
                 size,
             ) 
         print("now starting to save cropped video")
-        #pdb.set_trace()
+
 
         for k in range(len(files)):
             out.write(files[k])
