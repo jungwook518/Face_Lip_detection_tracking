@@ -1,4 +1,4 @@
-# NIA_DATA_Labeling
+# Face and Lip detection and tracking
 
 ## 1. Face detection and tracking
 ```python Face_tracking.py --video_path /input/videos/path/folder/ --save_video_path /save/videos/path/folder/```
