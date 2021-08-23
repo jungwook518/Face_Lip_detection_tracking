@@ -1,15 +1,9 @@
 # Face and Lip detection and tracking
 
 ## Samples
-### 1. Face tracking
-<img src="https://github.com/jungwook518/Face_Lip_detection_tracking/blob/master/samples/Face_ex1.gif" width="100" height="100">
-
-### 2. Face tracking
-<img src="https://github.com/jungwook518/Face_Lip_detection_tracking/blob/master/samples/Lip_ex1.gif" width="100" height="100">
-
-### 3. Test
+### 1. Face and Lip tracking
 <div>
-  <img src="https://github.com/jungwook518/Face_Lip_detection_tracking/blob/master/samples/Lip_ex1.gif" style="float: left;" width="100" height="100">
+  <img src="https://github.com/jungwook518/Face_Lip_detection_tracking/blob/master/samples/Face_ex1.gif" style="float: left;" width="100" height="100">
   <img src="https://github.com/jungwook518/Face_Lip_detection_tracking/blob/master/samples/Lip_ex1.gif" style="float: right;" width="100" height="100">
 </div>
 
