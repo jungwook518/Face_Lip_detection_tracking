@@ -1,6 +1,6 @@
 # Face and Lip detection and tracking
 
-## Samples
+## 0. Samples
 ### 1. Face and Lip tracking
 <div>
   <img src="https://github.com/jungwook518/Face_Lip_detection_tracking/blob/master/samples/Face_ex1.gif" style="float: left;" width="100" height="100">
