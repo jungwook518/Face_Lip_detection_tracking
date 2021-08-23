@@ -13,3 +13,6 @@
 ## 2. Lip detection and tracking
 ```python Lip_tracking.py --video_path /input/videos/path/folder/ --save_video_path /save/videos/path/folder/ --mode tracking --save_label_path /save/keypoint/labeling/json/folder/ --check_video True```
 
+| 제목1 | 제목2 | 제목3 |
+|:---:|:---:|:---:|
+| 내용1 | 내용2 | 내용3 |
