@@ -13,6 +13,7 @@
 ## 2. Lip detection and tracking
 ```python Lip_tracking.py --video_path /input/videos/path/folder/ --save_video_path /save/videos/path/folder/ --mode tracking --save_label_path /save/keypoint/labeling/json/folder/ --check_video True```
 
+## 3. Calculation time
 | Time(s) | Tracking | Detection |
 |:---:|:---:|:---:|
 | Face | 1.1s | 11.2s |
