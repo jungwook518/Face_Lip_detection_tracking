@@ -59,8 +59,8 @@ fa_probs_threshold  = 0.95
 
 
 fps=25
-size=(88,88)
-border = 20
+size=(224,224)
+border = 0
 
 
 
@@ -71,7 +71,7 @@ f = open("./no_process_videos.txt", 'w')
 for video_name in video_list:
     try:
         video=args["video_path"]+str(video_name)
-        out_path = args["save_video_path"] + '/'+str(video_name)   
+        out_path = args["save_video_path"] + '/Face_'+str(video_name)   
         label_out_path = args["save_label_path"] +'/Face_'+ str(video_name)[:-4]+'.json'
         
         if not os.path.exists(args["save_video_path"]):
