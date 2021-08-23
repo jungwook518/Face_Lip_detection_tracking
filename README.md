@@ -1,4 +1,4 @@
-# Face and Lip detection and tracking ???
+# Face and Lip detection and tracking
 
 ## Samples
 ### 1. Face
