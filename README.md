@@ -13,10 +13,8 @@
 ## 2. Lip detection and tracking
 ```python Lip_tracking.py --video_path /input/videos/path/folder/ --save_video_path /save/videos/path/folder/ --mode tracking --save_label_path /save/keypoint/labeling/json/folder/ --check_video True```
 
-| 제목1 | 제목2 | 제목3 |
+| Time(s) | Tracking | Detection |
 |:---:|:---:|:---:|
-| 내용1 | 내용2 | 내용3 |
-| 내용1 | 내용2 | 내용3 |
-| 내용1 | 내용2 | 내용3 |
-|:---:|:---:|:---:|
+| Face | 1.1s | 11.2s |
+| Lip | 0.9s | 10.1s |
 
