@@ -114,6 +114,10 @@ for video_name in video_list:
                     min_y = min(y)-border
                     max_x = max(x)+border
                     max_y = max(y)+border
+                    if min_x < 0. :
+                        min_x = 0.
+                    if min_y < 0. :
+                        min_y = 0.
                     height = int((max_y-min_y)/2)
                     width = int((max_x-min_x)/2)
                     standard=max(height,width)
@@ -145,6 +149,10 @@ for video_name in video_list:
                 min_y = min(y)-border
                 max_x = max(x)+border
                 max_y = max(y)+border
+                if min_x < 0. :
+                    min_x = 0.
+                if min_y < 0. :
+                    min_y = 0.
                 height = int((max_y-min_y)/2)
                 width = int((max_x-min_x)/2)
                 standard=max(height,width)
@@ -187,7 +195,7 @@ for video_name in video_list:
             json.dump(lip_box, make_file, indent="\t")
         
         
-        if args["check_video"] = True:
+        if args["check_video"] == True:
             out = cv2.VideoWriter(
                     out_path,
                     #cv2.VideoWriter_fourcc(*'DIVX'),
