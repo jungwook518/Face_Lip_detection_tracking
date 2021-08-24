@@ -28,7 +28,7 @@ ap.add_argument("-v", "--video_path", type=str, required=True, help="path to inp
 ap.add_argument("-sl", "--save_label_path", type=str, required=True, help="path to output video file")
 
 ap.add_argument("-sv", "--save_video_path", type=str, required=True, help="path to output video file")
-ap.add_argument("-cv", "--check_video", type=str, required=True, help="check to save video file, True, False")
+ap.add_argument("-cv", "--check_video", type=int, required=True, help="check to save video file, True, False")
 ap.add_argument("-m", "--mode", type=str,required=True, help="tracking or detection", )
 ap.add_argument("-t", "--tracker", type=str, default="medianflow", help="OpenCV object tracker type")
 args = vars(ap.parse_args())
@@ -61,14 +61,14 @@ border = 0
 
 
 
-video_list=[x for x in listdir(args["video_path"]) if ".mp4" in x]
+video_list=[x for x in listdir(args["video_path"]) if ".avi" in x]
 video_list=sorted(video_list)
 video_count=0
 f = open("./no_process_videos.txt", 'w')
 for video_name in video_list:
     try:
         video=args["video_path"]+str(video_name)
-        out_path = args["save_video_path"] + '/Face_'+str(video_name)   
+        out_path = args["save_video_path"] + '/Face_'+str(video_name)[:-4]+'.mp4'   
         label_out_path = args["save_label_path"] +'/Face_'+ str(video_name)[:-4]+'.json'
         
         if not os.path.exists(args["save_video_path"]):
@@ -79,7 +79,7 @@ for video_name in video_list:
         reader = skvideo.io.FFmpegReader(video)
         video_shape = reader.getShape()
         (num_frames, h, w, c) = video_shape
-
+        print(num_frames, h, w, c)
 
         start_time=time.time()
         vs = cv2.VideoCapture(video)
@@ -93,6 +93,7 @@ for video_name in video_list:
         
         while True:        
             hasFrame, frame = vs.read()
+            
             if not hasFrame:
                 break
             count+=1      
@@ -114,6 +115,10 @@ for video_name in video_list:
                     min_y = min(y)-border
                     max_x = max(x)+border
                     max_y = max(y)+border
+                    if min_x < 0. :
+                        min_x = 0.
+                    if min_y < 0. :
+                        min_y = 0.
                     height = int((max_y-min_y)/2)
                     width = int((max_x-min_x)/2)
                     standard=max(height,width)
@@ -131,13 +136,15 @@ for video_name in video_list:
 
             if args["mode"] == "detection":       
                 pred, probs = fa.get_landmarks(frame)
+                
                 if len(probs) > 1:
                     for prob in probs:
                         overlapped_list.append(prob)
                     min_index=overlapped_list.index(max(overlapped_list))
                     pred=[pred[min_index]]
                     overlapped_list=[]
-                
+
+
                 pred = np.squeeze(pred)
                 x = pred[:,0]
                 y = pred[:,1]
@@ -145,13 +152,19 @@ for video_name in video_list:
                 min_y = min(y)-border
                 max_x = max(x)+border
                 max_y = max(y)+border
+                if min_x < 0. :
+                    min_x = 0.
+                if min_y < 0. :
+                    min_y = 0.
+                
+                
                 height = int((max_y-min_y)/2)
                 width = int((max_x-min_x)/2)
                 standard=max(height,width)
                 box = [int(min_x), int(min_y), int(max_x), int(max_y)]
                 box = tuple(box)
-
-
+                
+                # print(n_frame)
             (x, y, w, h) = [int(v) for v in box]
             
             left_boundary=int((h+y)/2)-standard
@@ -164,10 +177,11 @@ for video_name in video_list:
             resized_crop_img=cv2.resize(crop_img, dsize=size,interpolation=cv2.INTER_LINEAR)
             files.append(resized_crop_img)
             n_frame += 1
+            # pdb.set_trace()
         
            
         print("mpg vs mpg_crop: {} vs {}".format(count,len(files)))
-        
+        # pdb.set_trace()
         if num_frames == len(files):
             print("Good crop: ", video)
             lip_box = dict()
@@ -186,10 +200,10 @@ for video_name in video_list:
         with open(label_out_path, 'w', encoding='utf-8') as make_file:
             json.dump(lip_box, make_file, indent="\t")
         
-        if args["check_video"] = True:
+        if args["check_video"] == 1:
             out = cv2.VideoWriter(
                     out_path,
-                    #cv2.VideoWriter_fourcc(*'DIVX'),
+                    # cv2.VideoWriter_fourcc(*'DIVX'),
                     cv2.VideoWriter_fourcc(*'mp4v'),
                     fps,
                     size,
@@ -197,6 +211,7 @@ for video_name in video_list:
             print("now starting to save cropped video")
             for k in range(len(files)):
                 out.write(files[k])
+            pdb.set_trace()
             out.release()
         
             vs.release()
