@@ -28,7 +28,7 @@ ap.add_argument("-v", "--video_path", type=str, required=True, help="path to inp
 ap.add_argument("-sl", "--save_label_path", type=str, required=True, help="path to output video file")
 
 ap.add_argument("-sv", "--save_video_path", type=str, required=True, help="path to output video file")
-ap.add_argument("-cv", "--check_video", type=int, required=True, help="check to save video file, True, False")
+ap.add_argument("-cv", "--check_video", type=bool, required=True, help="check to save video file, True, False")
 ap.add_argument("-m", "--mode", type=str,required=True, help="tracking or detection", )
 ap.add_argument("-t", "--tracker", type=str, default="medianflow", help="OpenCV object tracker type")
 args = vars(ap.parse_args())
@@ -200,7 +200,7 @@ for video_name in video_list:
         with open(label_out_path, 'w', encoding='utf-8') as make_file:
             json.dump(lip_box, make_file, indent="\t")
         
-        if args["check_video"] == 1:
+        if args["check_video"] == True:
             out = cv2.VideoWriter(
                     out_path,
                     # cv2.VideoWriter_fourcc(*'DIVX'),
