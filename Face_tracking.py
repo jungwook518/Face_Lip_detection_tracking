@@ -66,6 +66,7 @@ video_list=sorted(video_list)
 video_count=0
 f = open("./no_process_videos.txt", 'w')
 for video_name in video_list:
+    # pdb.set_trace()
     try:
         video=args["video_path"]+str(video_name)
         out_path = args["save_video_path"] + '/Face_'+str(video_name)[:-4]+'.mp4'   
@@ -184,13 +185,15 @@ for video_name in video_list:
         # pdb.set_trace()
         if num_frames == len(files):
             print("Good crop: ", video)
-            lip_box = dict()
+            
+            face_box = dict()
+            face_box['Face_bounding_box']={}
             for i in range(num_frames):
-                lip_box['frame_'+str(i)]={}
-                lip_box['frame_'+str(i)]['xtl']=left_boundary
-                lip_box['frame_'+str(i)]['ytl']=top_boundary
-                lip_box['frame_'+str(i)]['xbl']=right_boundary
-                lip_box['frame_'+str(i)]['ybl']=bottom_boundary
+                face_box['Face_bounding_box']['frame_'+str(i)]={}
+                face_box['Face_bounding_box']['frame_'+str(i)]['xtl']=left_boundary
+                face_box['Face_bounding_box']['frame_'+str(i)]['ytl']=top_boundary
+                face_box['Face_bounding_box']['frame_'+str(i)]['xbl']=right_boundary
+                face_box['Face_bounding_box']['frame_'+str(i)]['ybl']=bottom_boundary
         else:
             print("No crop: ", video)
             f.write(video)
@@ -198,7 +201,7 @@ for video_name in video_list:
             continue
         
         with open(label_out_path, 'w', encoding='utf-8') as make_file:
-            json.dump(lip_box, make_file, indent="\t")
+            json.dump(face_box, make_file, indent="\t")
         
         if args["check_video"] == True:
             out = cv2.VideoWriter(
@@ -211,7 +214,7 @@ for video_name in video_list:
             print("now starting to save cropped video")
             for k in range(len(files)):
                 out.write(files[k])
-            pdb.set_trace()
+            # pdb.set_trace()
             out.release()
         
             vs.release()
