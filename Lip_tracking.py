@@ -57,11 +57,11 @@ fa_probs_threshold  = 0.95
 
 fps=25
 size=(88,88)
-border = 20
+border = 0
 
 
 
-video_list=[x for x in listdir(args["video_path"]) if ".mp4" in x]
+video_list=[x for x in listdir(args["video_path"]) if ".avi" in x]
 video_list=sorted(video_list)
 video_count=0
 f = open("./no_process_videos.txt", 'w')
@@ -179,12 +179,14 @@ for video_name in video_list:
         if num_frames == len(files):
             print("Good crop: ", video)
             lip_box = dict()
+            lip_box['Lip_bounding_box']={}
             for i in range(num_frames):
-                lip_box['frame_'+str(i)]={}
-                lip_box['frame_'+str(i)]['xtl']=left_boundary
-                lip_box['frame_'+str(i)]['ytl']=top_boundary
-                lip_box['frame_'+str(i)]['xbl']=right_boundary
-                lip_box['frame_'+str(i)]['ybl']=bottom_boundary
+                lip_box['Lip_bounding_box']['frame_'+str(i)]={}
+                lip_box['Lip_bounding_box']['frame_'+str(i)]['xtl']=left_boundary
+                lip_box['Lip_bounding_box']['frame_'+str(i)]['ytl']=top_boundary
+                lip_box['Lip_bounding_box']['frame_'+str(i)]['xbl']=right_boundary
+                lip_box['Lip_bounding_box']['frame_'+str(i)]['ybl']=bottom_boundary
+
         else:
             print("No crop: ", video)
             f.write(video)
