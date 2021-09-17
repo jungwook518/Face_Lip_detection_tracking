@@ -43,9 +43,9 @@ def main(video):
     resize_face=(224,224)
     border_face = 10
 
-    face_mp4_SAVE_ROOT   =   '/home/nas/user/jungwook/Face_Lip_detection_tracking/Face_MP4_save_output/'
-    face_label_SAVE_ROOT   =   '/home/nas/user/jungwook/Face_Lip_detection_tracking/Face_label_save_output/'
-    face_npy_SAVE_ROOT   =   '/home/nas/user/jungwook/Face_Lip_detection_tracking/Face_npy_save_output/'
+    face_mp4_SAVE_ROOT   =   '/home/nas3/user/jungwook/Face_Lip_detection_tracking/Face_MP4_save_output/'
+    face_label_SAVE_ROOT   =   '/home/nas3/user/jungwook/Face_Lip_detection_tracking/Face_label_save_output/'
+    face_npy_SAVE_ROOT   =   '/home/nas3/user/jungwook/Face_Lip_detection_tracking/Face_npy_save_output/'
 
     
     
@@ -143,13 +143,13 @@ def main(video):
     # pdb.set_trace()
     if num_frames == len(files):
         print("Good crop: ", video)
-        f_c = open('./crop_list.txt','a')
+        f_c = open('/home/nas3/user/jungwook/Face_Lip_detection_tracking/Face_crop_list.txt','a')
         f_c.write(video)
         f_c.write('\n')
         f_c.close()
     else:
         print("No crop: ", video)
-        f_e = open('./no_crop_list.txt','a')
+        f_e = open('/home/nas3/user/jungwook/Face_Lip_detection_tracking/Face_no_crop_list.txt','a')
         f_e.write(video)
         f_e.write('\n')
         f_e.close()
@@ -204,10 +204,10 @@ if __name__ == "__main__":
     videos_list = sorted(videos_list)
 
     #'./no_crop_list.txt' and 'crop_list.txt' 만들어주기
-    f = open('./Face_no_crop_list.txt','w')
+    f = open('/home/nas3/user/jungwook/Face_Lip_detection_tracking/Face_no_crop_list.txt','w')
     f.close()
 
-    f = open('./Face_crop_list.txt','w')
+    f = open('/home/nas3/user/jungwook/Face_Lip_detection_tracking/Face_crop_list.txt','w')
     f.close()
     start_time=time.time()
     procs = []
