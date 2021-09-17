@@ -1,9 +1,9 @@
 import face_alignment
 import collections
 import numpy as np
-from imutils.video import VideoStream
+# from imutils.video import VideoStream
 import argparse
-import imutils
+# import imutils
 import time
 import cv2
 import os, sys
@@ -20,203 +20,214 @@ from glob import glob
 
 
 
+def main(video, 
+        resize_face,
+        border_face,
+        face_label_SAVE_ROOT,
+        face_npy_SAVE_ROOT,
+        face_mp4_SAVE_ROOT=False):
 
-os.environ["CUDA_VISIBLE_DEVICES"] = str(0)
-# construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-v", "--video_path", type=str, required=True, help="path to input video file")
-ap.add_argument("-sl", "--save_label_path", type=str, required=True, help="path to output video file")
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(0)
+    OPENCV_OBJECT_TRACKERS = {
+        "csrt": cv2.TrackerCSRT_create,
+        "kcf": cv2.TrackerKCF_create,
+        "boosting": cv2.TrackerBoosting_create,
+        "mil": cv2.TrackerMIL_create,
+        "tld": cv2.TrackerTLD_create,
+        "medianflow": cv2.TrackerMedianFlow_create,
+        "mosse": cv2.TrackerMOSSE_create,
+        "goturn":cv2.TrackerGOTURN_create
+    }
+                            
+    fa=face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cuda',flip_input=False, face_detector='sfd')
+    fa_probs_threshold  = 0.95
+    fps=30
+    
 
-ap.add_argument("-sv", "--save_video_path", type=str, required=True, help="path to output video file")
-ap.add_argument("-cv", "--check_video", type=bool, required=True, help="check to save video file, True, False")
-ap.add_argument("-m", "--mode", type=str,required=True, help="tracking or detection", )
-ap.add_argument("-t", "--tracker", type=str, default="medianflow", help="OpenCV object tracker type")
-args = vars(ap.parse_args())
+    video = video
+    resize_face = resize_face
+    border_face = border_face
 
-# initialize a dictionary that maps strings to their corresponding
-# OpenCV object tracker implementations
-OPENCV_OBJECT_TRACKERS = {
-	"csrt": cv2.TrackerCSRT_create,
-	"kcf": cv2.TrackerKCF_create,
-	"boosting": cv2.TrackerBoosting_create,
-	"mil": cv2.TrackerMIL_create,
-	"tld": cv2.TrackerTLD_create,
-	"medianflow": cv2.TrackerMedianFlow_create,
-	"mosse": cv2.TrackerMOSSE_create,
-    "goturn":cv2.TrackerGOTURN_create
-}
-                        
+    face_label_SAVE_ROOT = face_label_SAVE_ROOT
+    face_npy_SAVE_ROOT = face_npy_SAVE_ROOT
+    face_mp4_SAVE_ROOT = face_mp4_SAVE_ROOT
+    
+  
+    label_save_video_name = video.split('/')[-1][:-4]
+    label_out_path = face_label_SAVE_ROOT +label_save_video_name+'.json'
 
-fa=face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cuda',flip_input=False, face_detector='sfd')
+    npy_face_save_video_name = video.split('/')[-1][:-4]
+    npy_out_path = face_npy_SAVE_ROOT +npy_face_save_video_name+'.npy'
 
-fa_probs_threshold  = 0.95
+    check_save_video_name = video.split('/')[-1][:-4]
+    check_out_path = face_mp4_SAVE_ROOT +check_save_video_name+'.mp4'
+    
+    if not os.path.exists(face_label_SAVE_ROOT):
+        os.makedirs(face_label_SAVE_ROOT)
+    if not os.path.exists(face_npy_SAVE_ROOT):
+        os.makedirs(face_npy_SAVE_ROOT)
+    if not os.path.exists(face_mp4_SAVE_ROOT):
+        os.makedirs(face_mp4_SAVE_ROOT)
 
-# initialize OpenCV's special multi-object tracker
-#trackers            = cv2.MultiTracker_create()
-
-
-fps=25
-size=(88,88)
-border = 0
-
-
-
-video_list=[x for x in listdir(args["video_path"]) if ".avi" in x]
-video_list=sorted(video_list)
-video_count=0
-f = open("./no_process_videos.txt", 'w')
-for video_name in video_list:
-    try:
-        video=args["video_path"]+str(video_name)
-        out_path = args["save_video_path"] + '/Lip_'+str(video_name)   
-        label_out_path = args["save_label_path"] +'/Lip_'+ str(video_name)[:-4]+'.json'
-        
-        if not os.path.exists(args["save_video_path"]):
-            os.makedirs(args["save_video_path"])
-        if not os.path.exists(args["save_label_path"]):
-            os.makedirs(args["save_label_path"])
-        
-        reader = skvideo.io.FFmpegReader(video)
-        video_shape = reader.getShape()
-        (num_frames, h, w, c) = video_shape
-
-
-        start_time=time.time()
-        vs = cv2.VideoCapture(video)
-        
-        # loop over frames from the video stream
-        n_frame=0
-        files=[]
-        count=0
-        video_count+=1
-        overlapped_list=[]
-        
-        while True:        
-            hasFrame, frame = vs.read()
-            if not hasFrame:
-                break
-            count+=1      
-            if args["mode"] == "tracking":
-                ############################ face detect at first frame ############################
-                if n_frame == 0:                   
-                    pred, probs = fa.get_landmarks(frame)
-                    if len(probs) > 1:
-                        for prob in probs:
-                            overlapped_list.append(prob)
-                        min_index=overlapped_list.index(max(overlapped_list))
-                        pred=[pred[min_index]]
-                        overlapped_list=[]
-                    
-                    pred = np.squeeze(pred)
-                    x = pred[48:,0]
-                    y = pred[48:,1]
-                    min_x = min(x)-border
-                    min_y = min(y)-border
-                    max_x = max(x)+border
-                    max_y = max(y)+border
-                    if min_x < 0. :
-                        min_x = 0.
-                    if min_y < 0. :
-                        min_y = 0.
-                    height = int((max_y-min_y)/2)
-                    width = int((max_x-min_x)/2)
-                    standard=max(height,width)
-                    box = [int(min_x), int(min_y), int(max_x), int(max_y)]
-                    box = tuple(box)
-                    tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]]()
-                    tracker.init(frame, box)
-
-                else:
-                    (success, boxes) = tracker.update(frame)
-                    box=[]
-                    for i in range(len(boxes)):
-                        box.append(int(boxes[i]))
-                    box=tuple(box)
-
-            if args["mode"] == "detection":       
-                pred, probs = fa.get_landmarks(frame)
-                if len(probs) > 1:
-                    for prob in probs:
-                        overlapped_list.append(prob)
-                    min_index=overlapped_list.index(max(overlapped_list))
-                    pred=[pred[min_index]]
-                    overlapped_list=[]
-                
-                pred = np.squeeze(pred)
-                x = pred[48:,0]
-                y = pred[48:,1]
-                min_x = min(x)-border
-                min_y = min(y)-border
-                max_x = max(x)+border
-                max_y = max(y)+border
-                if min_x < 0. :
-                    min_x = 0.
-                if min_y < 0. :
-                    min_y = 0.
-                height = int((max_y-min_y)/2)
-                width = int((max_x-min_x)/2)
-                standard=max(height,width)
-                box = [int(min_x), int(min_y), int(max_x), int(max_y)]
-                box = tuple(box)
-
-
-            (x, y, w, h) = [int(v) for v in box]
+    start_time=time.time()
+    reader = skvideo.io.FFmpegReader(video)
+    video_shape = reader.getShape()
+    (num_frames, h, w, c) = video_shape    
+    # loop over frames from the video stream
+    n_frame=0
+    files=[]
+    overlapped_list=[]
+    face_box = dict()
+    face_box['Lip_bounding_box']={}
+    for frame in reader.nextFrame():     
+        # frame = frame[:,3840//4:3840//4*3,:] 
+        print(n_frame,' ', num_frames)
+        ############################ face detect at first frame ############################
+        if n_frame == 0:                   
+            pred, probs = fa.get_landmarks(frame)
+            if len(probs) > 1:
+                for prob in probs:
+                    overlapped_list.append(prob)
+                min_index=overlapped_list.index(max(overlapped_list))
+                pred=[pred[min_index]]
+                overlapped_list=[]
             
-            left_boundary=int((h+y)/2)-standard
-            right_boundary=int((h+y)/2)+standard
-            top_boundary=int((w+x)/2)-standard
-            bottom_boundary=int((w+x)/2)+standard
-
-            
-            crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
-            resized_crop_img=cv2.resize(crop_img, dsize=size,interpolation=cv2.INTER_LINEAR)
-            files.append(resized_crop_img)
-            n_frame += 1
-        
-           
-        print("mpg vs mpg_crop: {} vs {}".format(count,len(files)))
-        
-        if num_frames == len(files):
-            print("Good crop: ", video)
-            lip_box = dict()
-            lip_box['Lip_bounding_box']={}
-            for i in range(num_frames):
-                lip_box['Lip_bounding_box']['frame_'+str(i)]={}
-                lip_box['Lip_bounding_box']['frame_'+str(i)]['xtl']=left_boundary
-                lip_box['Lip_bounding_box']['frame_'+str(i)]['ytl']=top_boundary
-                lip_box['Lip_bounding_box']['frame_'+str(i)]['xbl']=right_boundary
-                lip_box['Lip_bounding_box']['frame_'+str(i)]['ybl']=bottom_boundary
-
+            pred = np.squeeze(pred)
+            x = pred[48:,0]
+            y = pred[48:,1]
+            min_x = min(x)-border_face
+            min_y = min(y)-border_face
+            max_x = max(x)+border_face
+            max_y = max(y)+border_face
+            if min_x < 0. :
+                min_x = 0.
+            if min_y < 0. :
+                min_y = 0.
+            height = int((max_y-min_y)/2)
+            width = int((max_x-min_x)/2)
+            standard=max(height,width)
+            box = [int(min_x), int(min_y), int(max_x), int(max_y)]
+            box = tuple(box)
+            tracker = OPENCV_OBJECT_TRACKERS["medianflow"]()
+            tracker.init(frame, box)
+            prev_frame = frame
         else:
-            print("No crop: ", video)
-            f.write(video)
-            f.write('\n')
-            continue
-        
-        with open(label_out_path, 'w', encoding='utf-8') as make_file:
-            json.dump(lip_box, make_file, indent="\t")
-        
-        
-        if args["check_video"] == True:
-            out = cv2.VideoWriter(
-                    out_path,
-                    #cv2.VideoWriter_fourcc(*'DIVX'),
-                    cv2.VideoWriter_fourcc(*'mp4v'),
-                    fps,
-                    size,
-                ) 
-            print("now starting to save cropped video")
-            for k in range(len(files)):
-                out.write(files[k])
-            out.release()
-        
-            vs.release()
-            print(video_name, " saved",video_count)
+            (success, boxes) = tracker.update(frame)
+            if success == False:
+                boxes = previous_box
+            box=[]
+            for i in range(len(boxes)):
+                box.append(int(boxes[i]))
+            box=tuple(box)
 
-        print("time: ",time.time()-start_time) 
-        f.close()
-    except Exception as ex:
-        print("ERROR:",ex,video_name)
+            (success, boxes) = tracker.update(frame)
+            
 
+        (x, y, w, h) = [int(v) for v in box]        
+        left_boundary=int((h+y)/2)-standard
+        right_boundary=int((h+y)/2)+standard
+        top_boundary=int((w+x)/2)-standard
+        bottom_boundary=int((w+x)/2)+standard
 
         
+        crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
+        resized_crop_img=cv2.resize(crop_img, dsize=resize_face,interpolation=cv2.INTER_LINEAR)
+        files.append(resized_crop_img)
+        n_frame += 1
+        previous_box = box
+
+        face_box['Lip_bounding_box']['frame_'+str(n_frame-1)]={}
+        face_box['Lip_bounding_box']['frame_'+str(n_frame-1)]['xtl']=left_boundary
+        face_box['Lip_bounding_box']['frame_'+str(n_frame-1)]['ytl']=top_boundary
+        face_box['Lip_bounding_box']['frame_'+str(n_frame-1)]['xbl']=right_boundary
+        face_box['Lip_bounding_box']['frame_'+str(n_frame-1)]['ybl']=bottom_boundary
+    
+    print("mpg vs mpg_crop: {} vs {}".format(n_frame,len(files)))
+    # pdb.set_trace()
+    if num_frames == len(files):
+        print("Good crop: ", video)
+        f_c = open('./crop_list.txt','a')
+        f_c.write(video)
+        f_c.write('\n')
+        f_c.close()
+    else:
+        print("No crop: ", video)
+        f_e = open('./no_crop_list.txt','a')
+        f_e.write(video)
+        f_e.write('\n')
+        f_e.close()
+        
+    
+
+    with open(label_out_path, 'w', encoding='utf-8') as make_file:
+        json.dump(face_box, make_file, indent="\t")
+    
+    np.save(npy_out_path,files)
+    print("time: ",time.time()-start_time) 
+
+    if face_mp4_SAVE_ROOT :
+        out = cv2.VideoWriter(
+                check_out_path,
+                # cv2.VideoWriter_fourcc(*'DIVX'),
+                cv2.VideoWriter_fourcc(*'mp4v'),
+                fps,
+                resize_face,
+            ) 
+        print("now starting to save cropped video")
+        for k in range(len(files)):
+            out.write(files[k])
+        out.release()
+        print(video, " saved")
+    
+
+
+
+def search(d_name,li,ext):
+    for (paths, dirs, files) in os.walk(d_name):
+        for filename in files:
+            ext = os.path.splitext(filename)[-1]
+            if ext == '.mp4':
+                li.append(
+                        os.path.join(
+                            os.path.join(
+                                os.path.abspath(d_name),paths
+                                ), 
+                            filename
+                            )
+                        )
+
+if __name__ == "__main__":
+    
+    READ_ROOT   =   '/home/nas/user/jungwook/Face_Lip_detection_tracking/NIA/'
+    face_mp4_SAVE_ROOT   =   '/home/nas/user/jungwook/Face_Lip_detection_tracking/Lip_MP4_save_output/'
+    face_label_SAVE_ROOT   =   '/home/nas/user/jungwook/Face_Lip_detection_tracking/Lip_label_save_output/'
+    face_npy_SAVE_ROOT   =   '/home/nas/user/jungwook/Face_Lip_detection_tracking/Lip_npy_save_output/'
+    videos_list    =   []
+    ext = '.mp4'
+    # pdb.set_trace()
+    search(READ_ROOT, videos_list,ext)
+    videos_list = sorted(videos_list)
+
+    resize_face=(88,88)
+    border_face = 100
+    # size_lip=(88,88)
+    # border_lip = 30
+    
+    #######
+    #'./no_crop_list.txt' and 'crop_list.txt' 만들어주기
+    f = open('./no_crop_list.txt','w')
+    f.close()
+
+    f = open('./crop_list.txt','w')
+    f.close()
+    start_time=time.time()
+    for video in videos_list:
+        main(video, 
+        resize_face,
+        border_face,
+        face_label_SAVE_ROOT,
+        face_npy_SAVE_ROOT,
+        face_mp4_SAVE_ROOT)
+
+    print("Total time: ",time.time()-start_time) 
+    print("hi")
