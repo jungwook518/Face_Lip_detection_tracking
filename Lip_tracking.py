@@ -52,15 +52,15 @@ def process(idx):
         # npy_face_save_video_name = video.split('/')[-1][:-4]
         # npy_out_path = lip_npy_SAVE_ROOT +label_save_video_name+'.npy'
 
-        # check_save_video_name = video.split('/')[-1][:-4]
-        # check_out_path = lip_mp4_SAVE_ROOT +check_save_video_name+'.mp4'
+        check_save_video_name = video.split('/')[-1][:-4]
+        check_out_path = lip_mp4_SAVE_ROOT +check_save_video_name+'.mp4'
         
         if not os.path.exists(lip_label_SAVE_ROOT):
             os.makedirs(lip_label_SAVE_ROOT)
-        # if not os.path.exists(lip_npy_SAVE_ROOT):
-        #     os.makedirs(lip_npy_SAVE_ROOT)
-        # if not os.path.exists(lip_mp4_SAVE_ROOT):
-        #     os.makedirs(lip_mp4_SAVE_ROOT)
+        if not os.path.exists(lip_npy_SAVE_ROOT):
+            os.makedirs(lip_npy_SAVE_ROOT)
+        if not os.path.exists(lip_mp4_SAVE_ROOT):
+            os.makedirs(lip_mp4_SAVE_ROOT)
 
         start_time=time.time()
         reader = skvideo.io.FFmpegReader(video)
