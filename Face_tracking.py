@@ -39,7 +39,7 @@ def process(idx):
         fps=30
 
         resize_face=(224,224)
-        # border_face = 100
+        border_face = 10
 
         face_mp4_SAVE_ROOT   =   save_where+'Face_MP4_save_output/'
         face_label_SAVE_ROOT   =   save_where+'Face_label_save_output/'
@@ -88,7 +88,7 @@ def process(idx):
                 pred = np.squeeze(pred)
                 x = pred[:,0]
                 y = pred[:,1]
-                border_face = int(max(max(x) - min(x), max(y) - min(y))*0.5)
+                # border_face = int(max(max(x) - min(x), max(y) - min(y))*0.5)
                 min_x = min(x)-border_face
                 min_y = min(y)-border_face
                 max_x = max(x)+border_face
