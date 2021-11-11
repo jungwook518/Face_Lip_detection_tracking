@@ -88,11 +88,15 @@ def process(idx):
                 pred = np.squeeze(pred)
                 x = pred[48:,0]
                 y = pred[48:,1]
-                border_lip = int(max(max(x) - min(x), max(y) - min(y))*0.5)
-                min_x = min(x)-border_lip
-                min_y = min(y)-border_lip
-                max_x = max(x)+border_lip
-                max_y = max(y)+border_lip
+                # border_lip = int(max(max(x) - min(x), max(y) - min(y))*0.5)
+                # min_x = min(x)-border_lip
+                # min_y = min(y)-border_lip
+                # max_x = max(x)+border_lip
+                # max_y = max(y)+border_lip
+                min_x = min(x)
+                min_y = min(y)
+                max_x = max(x)
+                max_y = max(y)
                 if min_x < 0. :
                     min_x = 0.
                 if min_y < 0. :
@@ -113,7 +117,16 @@ def process(idx):
             if top_boundary <0:
                 top_boundary=0
             bottom_boundary=int((w+x)/2)+standard
+            border_lip = int(max(right_boundary-left_boundary,bottom_boundary-top_boundary))
 
+            left_boundary -=border_lip
+            right_boundary+=border_lip
+            top_boundary-=border_lip
+            bottom_boundary+=border_lip
+            if left_boundary < 0. :
+                    left_boundary = 0.
+            if top_boundary < 0. :
+                top_boundary = 0.
             crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
             resized_crop_img=cv2.resize(crop_img, dsize=resize_lip,interpolation=cv2.INTER_LINEAR)
             files.append(resized_crop_img)
@@ -130,22 +143,25 @@ def process(idx):
             with open(label_out_path, 'w', encoding='utf-8') as make_file:
                 json.dump(lip_box, make_file, indent="\t")
                 
+            
+            out = cv2.VideoWriter(
+                    check_out_path,
+                    cv2.VideoWriter_fourcc(*'mp4v'),
+                    fps,
+                    resize_lip,
+                ) 
+            print("now starting to save cropped video")
+
+            for k in range(len(files)):
+                out.write(files[k])
+            out.release()
+            print(video, " saved")
+
             f_c = open(save_where+'Lip_crop_list.txt','a')
             f_c.write(video)
             f_c.write('\n')
             f_c.close()
-            # out = cv2.VideoWriter(
-            #         check_out_path,
-            #         cv2.VideoWriter_fourcc(*'mp4v'),
-            #         fps,
-            #         resize_lip,
-            #     ) 
-            # print("now starting to save cropped video")
-
-            # for k in range(len(files)):
-            #     out.write(files[k])
-            # out.release()
-            # print(video, " saved")
+            
         else:
             print("No crop: ", video)
             f_e = open(save_where+'Lip_no_crop_list.txt','a')
@@ -177,9 +193,9 @@ def search(d_name,li,ext1):
                             )
                         )
 
-READ_ROOT   =   '/home/nia-jungwook/210907~0909_31명/'
+READ_ROOT   =   '/home/nia-jungwook/210826~210909_75명/'
 read_folder = READ_ROOT.split('/')[-2]
-save_where = '/home/nas4/user/jungwook/ubuntu/'+read_folder +'/'
+save_where = '/home/nas4/user/jungwook/window/'+read_folder +'/'
 if not os.path.exists(save_where):
     os.makedirs(save_where)
 
