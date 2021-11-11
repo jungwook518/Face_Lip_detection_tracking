@@ -39,7 +39,7 @@ def process(idx):
         fps=30
 
         resize_face=(224,224)
-        border_face = 10
+        # border_face = 10
 
         face_mp4_SAVE_ROOT   =   save_where+'Face_MP4_save_output/'
         face_label_SAVE_ROOT   =   save_where+'Face_label_save_output/'
@@ -88,11 +88,15 @@ def process(idx):
                 pred = np.squeeze(pred)
                 x = pred[:,0]
                 y = pred[:,1]
-                # border_face = int(max(max(x) - min(x), max(y) - min(y))*0.5)
-                min_x = min(x)-border_face
-                min_y = min(y)-border_face
-                max_x = max(x)+border_face
-                max_y = max(y)+border_face
+                # border_lip = int(max(max(x) - min(x), max(y) - min(y))*0.5)
+                # min_x = min(x)-border_lip
+                # min_y = min(y)-border_lip
+                # max_x = max(x)+border_lip
+                # max_y = max(y)+border_lip
+                min_x = min(x)
+                min_y = min(y)
+                max_x = max(x)
+                max_y = max(y)
                 if min_x < 0. :
                     min_x = 0.
                 if min_y < 0. :
@@ -113,6 +117,17 @@ def process(idx):
             if top_boundary <0:
                 top_boundary=0
             bottom_boundary=int((w+x)/2)+standard
+
+            border_face = int(max(right_boundary-left_boundary,bottom_boundary-top_boundary)*0.3)
+
+            left_boundary -=border_face
+            right_boundary+=border_face
+            top_boundary-=border_face
+            bottom_boundary+=border_face
+            if left_boundary < 0. :
+                left_boundary = 0.
+            if top_boundary < 0. :
+                top_boundary = 0.
 
             crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
             resized_crop_img=cv2.resize(crop_img, dsize=resize_face,interpolation=cv2.INTER_LINEAR)
