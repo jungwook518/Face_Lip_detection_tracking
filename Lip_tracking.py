@@ -39,7 +39,7 @@ def process(idx):
         fps=30
 
         resize_lip=(88,88)
-        border_lip = 100
+        # border_lip = 100
 
         lip_mp4_SAVE_ROOT   =   save_where+'Lip_MP4_save_output/'
         lip_label_SAVE_ROOT   =   save_where+'Lip_label_save_output/'
@@ -88,6 +88,7 @@ def process(idx):
                 pred = np.squeeze(pred)
                 x = pred[48:,0]
                 y = pred[48:,1]
+                border_lip = int(max(max(x) - min(x), max(y) - min(y))*0.5)
                 min_x = min(x)-border_lip
                 min_y = min(y)-border_lip
                 max_x = max(x)+border_lip
