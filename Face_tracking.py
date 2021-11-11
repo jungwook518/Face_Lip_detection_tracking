@@ -39,7 +39,7 @@ def process(idx):
         fps=30
 
         resize_face=(224,224)
-        border_face = 10
+        border_face = 100
 
         face_mp4_SAVE_ROOT   =   save_where+'Face_MP4_save_output/'
         face_label_SAVE_ROOT   =   save_where+'Face_label_save_output/'
