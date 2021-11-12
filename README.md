@@ -14,9 +14,9 @@
 ## STEP 2. Visualization
 ```python Visualization.py ```
 
-## STEP 3. Using KLT for ERROR File
-```python KLT_Face.py ```
-```python KLT_Lip.py ```
+## STEP 3. Using DT for ERROR File
+```python DT_Face.py ```
+```python DT_Lip.py ```
 
 1. STEP 1로 모든 파일에 대해 처리
 2. STEP 2로 Visualization 된 영상 파일을 통해 데이터 검증
@@ -25,7 +25,7 @@
 ## Calculation time
 | Time(s) | STEP 1 | STEP 2 |
 |:---:|:---:|:---:|
-| Face & Lip | x1 | x10 |
+| Face & Lip | x1 | x20 |
 
 
 
