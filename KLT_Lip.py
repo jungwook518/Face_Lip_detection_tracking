@@ -81,8 +81,8 @@ def process(idx):
                     overlapped_list=[]
                 
                 pred = np.squeeze(pred)
-                x = pred[:,0]
-                y = pred[:,1]
+                x = pred[48:,0]
+                y = pred[48:,1]
                 min_x = min(x)
                 min_y = min(y)
                 max_x = max(x)
