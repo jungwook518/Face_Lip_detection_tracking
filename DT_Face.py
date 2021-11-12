@@ -111,11 +111,11 @@ def process(idx):
                 if top_boundary <0:
                     top_boundary=0
                 bottom_boundary=int((w+x)/2)+standard
-                border_lip = int(max(right_boundary-left_boundary,bottom_boundary-top_boundary))
-                left_boundary -=border_lip
-                right_boundary+=border_lip
-                top_boundary-=border_lip
-                bottom_boundary+=border_lip
+                border_face = int(max(right_boundary-left_boundary,bottom_boundary-top_boundary)*0.5)
+                left_boundary -=border_face
+                right_boundary+=border_face
+                top_boundary-=border_face
+                bottom_boundary+=border_face
                 if left_boundary < 0 :
                         left_boundary = 0
                 if top_boundary < 0 :
