@@ -23,7 +23,7 @@
 3. STEP 3로 오류 데이터에 대해 처리
 
 ## Calculation time
-| Time(s) | STEP 1 | STEP 2 |
+| Time(s) | STEP 1 | STEP 3 |
 |:---:|:---:|:---:|
 | Face & Lip | x1 | x20 |
 
