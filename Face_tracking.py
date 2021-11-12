@@ -118,16 +118,16 @@ def process(idx):
                 top_boundary=0
             bottom_boundary=int((w+x)/2)+standard
 
-            border_face = int(max(right_boundary-left_boundary,bottom_boundary-top_boundary)*0.3)
+            border_face = int(max(right_boundary-left_boundary,bottom_boundary-top_boundary)*0.5)
 
             left_boundary -=border_face
             right_boundary+=border_face
             top_boundary-=border_face
             bottom_boundary+=border_face
-            if left_boundary < 0. :
-                left_boundary = 0.
-            if top_boundary < 0. :
-                top_boundary = 0.
+            if left_boundary < 0 :
+                left_boundary = 0
+            if top_boundary < 0 :
+                top_boundary = 0
 
             crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
             resized_crop_img=cv2.resize(crop_img, dsize=resize_face,interpolation=cv2.INTER_LINEAR)
@@ -145,10 +145,7 @@ def process(idx):
             with open(label_out_path, 'w', encoding='utf-8') as make_file:
                 json.dump(face_box, make_file, indent="\t")
                 
-            f_c = open(save_where+'Face_crop_list.txt','a')
-            f_c.write(video)
-            f_c.write('\n')
-            f_c.close()
+            
             out = cv2.VideoWriter(
                     check_out_path,
                     cv2.VideoWriter_fourcc(*'mp4v'),
@@ -160,6 +157,11 @@ def process(idx):
                 out.write(files[k])
             out.release()
             print(video, " saved")
+
+            f_c = open(save_where+'Face_crop_list.txt','a')
+            f_c.write(video)
+            f_c.write('\n')
+            f_c.close()
 
         else:
             print("No crop: ", video)

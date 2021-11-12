@@ -57,8 +57,8 @@ def process(idx):
         
         if not os.path.exists(lip_label_SAVE_ROOT):
             os.makedirs(lip_label_SAVE_ROOT)
-        if not os.path.exists(lip_npy_SAVE_ROOT):
-            os.makedirs(lip_npy_SAVE_ROOT)
+        # if not os.path.exists(lip_npy_SAVE_ROOT):
+        #     os.makedirs(lip_npy_SAVE_ROOT)
         if not os.path.exists(lip_mp4_SAVE_ROOT):
             os.makedirs(lip_mp4_SAVE_ROOT)
 
@@ -123,10 +123,10 @@ def process(idx):
             right_boundary+=border_lip
             top_boundary-=border_lip
             bottom_boundary+=border_lip
-            if left_boundary < 0. :
-                    left_boundary = 0.
-            if top_boundary < 0. :
-                top_boundary = 0.
+            if left_boundary < 0 :
+                    left_boundary = 0
+            if top_boundary < 0 :
+                top_boundary = 0
             crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
             resized_crop_img=cv2.resize(crop_img, dsize=resize_lip,interpolation=cv2.INTER_LINEAR)
             files.append(resized_crop_img)
