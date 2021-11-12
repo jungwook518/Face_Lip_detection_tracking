@@ -127,6 +127,7 @@ def process(idx):
                 n_frame += 1
                 prev_frame = frame
                 previous_bbox = bbox
+                lip_box['Lip_bounding_box']['xtl_ytl_xbr_ybr'].append([left_boundary,top_boundary,right_boundary,bottom_boundary])
             else:
 
                 newXs, newYs = estimateAllTranslation(startXs, startYs, prev_frame, frame)
