@@ -13,7 +13,9 @@
 
 ## STEP 2. Visualization
 ```python Visualization.py ```
-
+<div>
+  <img src="https://github.com/jungwook518/Face_Lip_detection_tracking/blob/master/samples/Visual.gif" style="float: left;" width="100" height="100">
+</div>
 ## STEP 3. Using DT for ERROR File
 ```python DT_Face.py ```
 ```python DT_Lip.py ```
