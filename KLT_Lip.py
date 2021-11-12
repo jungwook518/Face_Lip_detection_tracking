@@ -27,7 +27,7 @@ from getFeatures import *
 
 def process(idx):
     try:
-       video = videos_list[idx]     
+        video = videos_list[idx]     
         fa=face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu',flip_input=False, face_detector='sfd')
         fa_probs_threshold  = 0.95
         fps=30
