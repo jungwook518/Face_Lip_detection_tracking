@@ -25,7 +25,7 @@
 ## Calculation time
 | Time(s) | STEP 1 | STEP 2 |
 |:---:|:---:|:---:|
-| Face % Lip | x1 | x10 |
+| Face & Lip | x1 | x10 |
 
 
 
