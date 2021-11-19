@@ -144,17 +144,17 @@ def process(idx):
                 json.dump(face_box, make_file, indent="\t")
                 
             
-            out = cv2.VideoWriter(
-                    check_out_path,
-                    cv2.VideoWriter_fourcc(*'mp4v'),
-                    fps,
-                    resize_face,
-                ) 
-            print("now starting to save cropped video")
-            for k in range(len(files)):
-                out.write(files[k])
-            out.release()
-            print(video, " saved")
+            # out = cv2.VideoWriter(
+            #         check_out_path,
+            #         cv2.VideoWriter_fourcc(*'mp4v'),
+            #         fps,
+            #         resize_face,
+            #     ) 
+            # print("now starting to save cropped video")
+            # for k in range(len(files)):
+            #     out.write(files[k])
+            # out.release()
+            # print(video, " saved")
 
             f_c = open(save_where+'Face_crop_list.txt','a')
             f_c.write(video)
