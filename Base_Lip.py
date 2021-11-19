@@ -49,7 +49,7 @@ def process(idx):
         label_save_video_name = video.split('/')[-1][:-4]
         label_out_path = lip_label_SAVE_ROOT +label_save_video_name+'.json'
 
-        # npy_lip_save_video_name = video.split('/')[-1][:-4]
+        # npy_face_save_video_name = video.split('/')[-1][:-4]
         # npy_out_path = lip_npy_SAVE_ROOT +label_save_video_name+'.npy'
 
         check_save_video_name = video.split('/')[-1][:-4]
@@ -57,8 +57,8 @@ def process(idx):
         
         if not os.path.exists(lip_label_SAVE_ROOT):
             os.makedirs(lip_label_SAVE_ROOT)
-        # if not os.path.exists(lip_npy_SAVE_ROOT):
-        #     os.makedirs(lip_npy_SAVE_ROOT)
+        if not os.path.exists(lip_npy_SAVE_ROOT):
+            os.makedirs(lip_npy_SAVE_ROOT)
         if not os.path.exists(lip_mp4_SAVE_ROOT):
             os.makedirs(lip_mp4_SAVE_ROOT)
 
@@ -73,7 +73,8 @@ def process(idx):
         lip_box = dict()
         lip_box['Lip_bounding_box']={}
         lip_box['Lip_bounding_box']['xtl_ytl_xbr_ybr']=[]
-        for frame in reader.nextFrame():     
+        for frame in reader.nextFrame():    
+            # pdb.set_trace() 
             if n_frame%1000 == 0:
                 print(label_save_video_name, ' ',n_frame,' ', num_frames)
             if n_frame == 0:                   
@@ -127,16 +128,17 @@ def process(idx):
                     left_boundary = 0
             if top_boundary < 0 :
                 top_boundary = 0
-            crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
-            resized_crop_img=cv2.resize(crop_img, dsize=resize_lip,interpolation=cv2.INTER_LINEAR)
-            files.append(resized_crop_img)
+            
+            # crop_img = frame[left_boundary:right_boundary,top_boundary:bottom_boundary]
+            # resized_crop_img=cv2.resize(crop_img, dsize=resize_lip,interpolation=cv2.INTER_LINEAR)
+            # files.append(resized_crop_img)
             n_frame += 1
             
             lip_box['Lip_bounding_box']['xtl_ytl_xbr_ybr'].append([left_boundary,top_boundary,right_boundary,bottom_boundary])
 
         print("mpg vs mpg_crop: {} vs {}".format(n_frame,len(files)))
 
-        if num_frames == len(files):
+        if num_frames == n_frame:
             print("Good crop: ", video)
             # npy_out_path = lip_npy_SAVE_ROOT +label_save_video_name+'.npy'
             # np.save(npy_out_path,files)
@@ -144,18 +146,18 @@ def process(idx):
                 json.dump(lip_box, make_file, indent="\t")
                 
             
-            out = cv2.VideoWriter(
-                    check_out_path,
-                    cv2.VideoWriter_fourcc(*'mp4v'),
-                    fps,
-                    resize_lip,
-                ) 
-            print("now starting to save cropped video")
+            # out = cv2.VideoWriter(
+            #         check_out_path,
+            #         cv2.VideoWriter_fourcc(*'mp4v'),
+            #         fps,
+            #         resize_lip,
+            #     ) 
+            # print("now starting to save cropped video")
 
-            for k in range(len(files)):
-                out.write(files[k])
-            out.release()
-            print(video, " saved")
+            # for k in range(len(files)):
+            #     out.write(files[k])
+            # out.release()
+            # print(video, " saved")
 
             f_c = open(save_where+'Lip_crop_list.txt','a')
             f_c.write(video)

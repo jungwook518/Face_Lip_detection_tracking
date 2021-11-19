@@ -138,9 +138,8 @@ def process(idx):
         
         print("mpg vs mpg_crop: {} vs {}".format(n_frame,len(files)))
 
-        if num_frames == len(files):
+        if num_frames == n_frame:
             print("Good crop: ", video)
-            npy_out_path = face_npy_SAVE_ROOT +label_save_video_name+'.npy'
             np.save(npy_out_path,files)
             with open(label_out_path, 'w', encoding='utf-8') as make_file:
                 json.dump(face_box, make_file, indent="\t")
