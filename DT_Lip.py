@@ -183,11 +183,8 @@ def process(idx):
                 
                 lip_box['Lip_bounding_box']['xtl_ytl_xbr_ybr'].append([left_boundary,top_boundary,right_boundary,bottom_boundary])
 
-            
 
-        print("mpg vs mpg_crop: {} vs {}".format(n_frame,len(files)))
-
-        if num_frames == len(files):
+        if num_frames == n_frame:
             print("Good crop: ", video)
             # npy_out_path = lip_npy_SAVE_ROOT +label_save_video_name+'.npy'
             # np.save(npy_out_path,files)
