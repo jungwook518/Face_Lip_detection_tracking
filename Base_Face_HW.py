@@ -201,7 +201,7 @@ videos_list = []
 ext = '.MP4'
 search(READ_ROOT, videos_list,ext)
 videos_list = sorted(videos_list)
-pdb.set_trace()
+
 
 yes_crop_file = save_where+'Face_crop_list.txt'
 
